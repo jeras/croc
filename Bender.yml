@@ -36,7 +36,7 @@ sources:
   # add your design files containing anything but modules (packages) here
 
     # RTL
-  - target: not(netlist_yosys)
+  - target: not(any(netlist_yosys, netlist_openroad))
     files:
       # Level 1
       - rtl/core_wrap.sv
@@ -63,11 +63,17 @@ sources:
     files:
       - yosys/out/netlist_debug.v
 
+  # netlist for timing annotated simulation
+  - target: netlist_openroad
+    files:
+      - openroad/out/croc.v
+
   - target: any(simulation, verilator)
     files:
       - rtl/test/tb_croc_pkg.sv
       - rtl/test/croc_vip.sv
       - rtl/test/tb_croc_soc.sv
+      - rtl/test/tb_croc_chip.sv
 
   - target: genesys2
     files:

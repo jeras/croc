@@ -114,10 +114,9 @@ generate_annotated_flist() {
         -t vsim \
         -t simulation \
         -t verilator \
-        -t netlist_yosys \
+        -t netlist_openroad \
         -DSYNTHESIS \
         -DSIMULATION \
-        -DSDF_ANNOTATED \
         --vlog-arg="-svinputport=compat"
         > compile_annotated.tcl"
 
@@ -238,6 +237,37 @@ run_vsim_gui() {
 }
 
 
+run_annotated_vsim() {
+    run_cmd "${VSIM} \
+        +binary=$1 \
+        -c \
+        tb_croc_chip \
+        -t 1ns \
+        -suppress vsim-3009 \
+        -suppress vsim-8683 \
+        -suppress vsim-8386 \
+        -sdfmax /tb_croc_chip/i_croc_chip=croc.sdf \
+        -do \"run -a; quit\""
+}
+
+
+run_annotated_vsim_gui() {
+    run_cmd "${VSIM} \
+        +binary=$1 \
+        -gui \
+        tb_croc_chip \
+        -t 1ns \
+        -voptargs=+acc \
+        -suppress vsim-3009 \
+        -suppress vsim-8683 \
+        -suppress vsim-8386 \
+        -sdfmax /tb_croc_chip/i_croc_chip=croc.sdf \
+        -suppress vsim-12088 \
+        -suppress vsim-12090 \
+        -suppress vsim-3262"
+}
+
+
 ####################
 # Parse Arguments
 ####################
@@ -272,6 +302,7 @@ while [[ $# -gt 0 ]]; do
         --flist)
             generate_rtl_flist
             generate_netlist_flist
+            generate_annotated_flist
             shift
             ;;
         --build)
@@ -292,6 +323,14 @@ while [[ $# -gt 0 ]]; do
             ;;
         --run-gui)
             run_vsim_gui $2
+            shift 2
+            ;;
+        --run-annotated)
+            run_annotated_vsim $2
+            shift 2
+            ;;
+        --run-annotated-gui)
+            run_annotated_vsim_gui $2
             shift 2
             ;;
         # Error handling

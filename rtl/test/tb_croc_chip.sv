@@ -222,16 +222,4 @@ module tb_croc_chip #(
     `endif
   end
 
-  //////////////////////////////////////
-  //  SDF (timing annotated netlist)  //
-  //////////////////////////////////////
-
-  initial begin
-//    `ifdef SDF_ANNOTATED
-      $display("SDF annotation!");
-      $sdf_annotate("croc.sdf", i_croc_chip);
-//    `endif
-  end
-
-
 endmodule
