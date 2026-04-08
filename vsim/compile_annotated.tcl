@@ -458,10 +458,12 @@ if {[catch { vlog -incr -sv \
     "+define+TARGET_VSIM" \
     "+define+SYNTHESIS" \
     "+define+SIMULATION" \
+    "+define+SDF_ANNOTATED" \
     "+incdir+$ROOT/rtl/apb/include" \
     "+incdir+$ROOT/rtl/common_cells/include" \
     "+incdir+$ROOT/rtl/idma/include" \
     "+incdir+$ROOT/rtl/obi/include" \
+    "+incdir+$ROOT/openroad/out" \
     "$ROOT/rtl/test/tb_croc_pkg.sv" \
     "$ROOT/rtl/test/croc_vip.sv" \
     "$ROOT/rtl/test/tb_croc_soc.sv" \

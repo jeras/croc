@@ -55,6 +55,7 @@ write_verilog -include_pwr_gnd -remove_cells "$stdfill bondpad*" ${out_dir}/${pr
 write_verilog                  ${out_dir}/${proj_name}.v
 write_db                       ${out_dir}/${proj_name}.odb
 write_sdc                      ${out_dir}/${proj_name}.sdc
+write_sdf -include_typ -divider / -corner tt ${out_dir}/${proj_name}.sdf
 
 ## WARNING: Currently the extract_parasitics command removes metal patches (eg for min area)
 ## So if you want to use it, do so at the very end after writing out the def and odb files
@@ -69,6 +70,7 @@ utl::report "# Stage 05 complete: Final outputs written to ${out_dir}/"
 utl::report "#  - DEF:         ${out_dir}/${proj_name}.def"
 utl::report "#  - ODB:         ${out_dir}/${proj_name}.odb"
 utl::report "#  - SDC:         ${out_dir}/${proj_name}.sdc"
+utl::report "#  - SDF:         ${out_dir}/${proj_name}.sdf"
 utl::report "#  - Verilog:     ${out_dir}/${proj_name}.v"
 utl::report "#  - LVS netlist: ${out_dir}/${proj_name}_lvs.v"
 utl::report "# Checkpoint saved to ${save_dir}/05_${proj_name}.final.zip"
