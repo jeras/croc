@@ -85,14 +85,20 @@ module tb_croc_chip #(
     .gpio_in_o     ( gpio_in     )
   );
 
+  ////////////
+  //  GPIO  //
+  ////////////
+
   generate
-    for(genvar i=0; i<GpioCount; i++) begin
-//      assign gpio[i] = gpio_in;
-      assign gpio_out[i] = gpio[i];
-      pullup(gpio[i]);
+    for(genvar i=0; i<=3; i++) begin
+      pulldown(gpio[i]);
+    end
+    // loop back
+    assign gpio[7:4] = gpio[3:0];
+    for(genvar i=8; i<GpioCount; i++) begin
+      pulldown(gpio[i]);
     end
   endgenerate
-
 
   ////////////
   //  DUT   //
