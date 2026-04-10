@@ -8,11 +8,17 @@
 
 `define TRACE_WAVE
 
+`ifdef CVC
+module tb_croc_chip #(parameter GpioCount = 32)();
+`else
 module tb_croc_chip #(
   parameter int unsigned GpioCount = 32
 );
+`endif
 
+  `ifdef TEST_VIP
   import tb_croc_pkg::*;
+  `endif
 
   // Signals fully controlled by the VIP
   // use VIP functions/tasks to manipulate these signals
@@ -20,14 +26,14 @@ module tb_croc_chip #(
   logic sys_clk;
   logic ref_clk;
 
-  logic jtag_tck;
-  logic jtag_trst_n;
-  logic jtag_tms;
-  logic jtag_tdi;
-  logic jtag_tdo;
+  wire  jtag_tck;
+  wire  jtag_trst_n;
+  wire  jtag_tms;
+  wire  jtag_tdi;
+  wire  jtag_tdo;
 
-  logic uart_rx;
-  logic uart_tx;
+  wire  uart_rx;
+  wire  uart_tx;
 
   // Signals partially controlled by the VIP
   logic [GpioCount-1:0] gpio_in;
@@ -67,6 +73,7 @@ module tb_croc_chip #(
   // - prints UART output to console (you can also write via uart_write_byte)
   // - internal GPIO loopback for helloworld test
 
+  `ifdef TEST_VIP
   croc_vip #(
     .GpioCount ( GpioCount )
   ) i_vip (
@@ -84,21 +91,43 @@ module tb_croc_chip #(
     .gpio_out_i    ( gpio_out    ),
     .gpio_in_o     ( gpio_in     )
   );
-
-  ////////////
-  //  GPIO  //
-  ////////////
-
+  `else
+  // reset
+  initial rst_n = 1'b0;
+  // system clock 20MHz
+  initial      sys_clk = 1'b1;
+//  `ifdef CVC
+  always #25   sys_clk = ~sys_clk;
+//  `else
+//  always #25ns sys_clk = ~sys_clk;
+//  `endif
+  // RTL clock 32kHz
+  initial         ref_clk = 1'b1;
+//  `ifdef CVC
+  always #30518   ref_clk = ~ref_clk;
+//  `else
+//  always #30518ns ref_clk = ~ref_clk;
+//  `endif
+  // JTAG (silent)
+  assign jtag_tck    = 1'b0;
+  assign jtag_trst_n = 1'b0;
+  assign jtag_tms    = 1'b0;
+  assign jtag_tdi    = 1'b0;
+  // UART
+  assign uart_rx = uart_tx;
+  // GPIO
   generate
-    for(genvar i=0; i<=3; i++) begin
+    genvar i;
+    for(i=0; i<=3; i++) begin
       pulldown(gpio[i]);
     end
     // loop back
     assign gpio[7:4] = gpio[3:0];
-    for(genvar i=8; i<GpioCount; i++) begin
+    for(i=8; i<GpioCount; i++) begin
       pulldown(gpio[i]);
     end
   endgenerate
+  `endif
 
   ////////////
   //  DUT   //
@@ -173,6 +202,8 @@ module tb_croc_chip #(
   initial begin
     $timeformat(-9, 0, "ns", 12); // 1: scale (ns=-9), 2: decimals, 3: suffix, 4: print-field width
 
+    `ifdef TEST_VIP
+
     // wait for reset
     #ClkPeriodSys;
 
@@ -202,6 +233,18 @@ module tb_croc_chip #(
     // finish simulation
     repeat(50) @(posedge sys_clk);
     $finish();
+
+    `else
+
+    // reset sequence
+    repeat(4) @(posedge sys_clk);
+    rst_n <= 1'b1;
+
+    // finish simulation
+    repeat(50) @(posedge sys_clk);
+    $finish();
+
+    `endif
   end
 
   ////////////////
@@ -222,10 +265,13 @@ module tb_croc_chip #(
   end
 
   // flush waveform dump when simulation ends
+  `ifdef CVC
+  `else
   final begin
     `ifdef TRACE_WAVE
       $dumpflush;
     `endif
   end
+  `endif
 
 endmodule

@@ -55,7 +55,7 @@ write_verilog -include_pwr_gnd -remove_cells "$stdfill bondpad*" ${out_dir}/${pr
 write_verilog                  ${out_dir}/${proj_name}.v
 write_db                       ${out_dir}/${proj_name}.odb
 write_sdc                      ${out_dir}/${proj_name}.sdc
-write_sdf -include_typ -divider / -corner tt ${out_dir}/${proj_name}.sdf
+write_sdf -include_typ -divider . -corner tt ${out_dir}/${proj_name}.sdf
 
 ## WARNING: Currently the extract_parasitics command removes metal patches (eg for min area)
 ## So if you want to use it, do so at the very end after writing out the def and odb files
