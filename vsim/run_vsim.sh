@@ -247,6 +247,9 @@ run_annotated_vsim() {
         -suppress vsim-8683 \
         -suppress vsim-8386 \
         -sdfmax /tb_croc_chip/i_croc_chip=croc.sdf \
+        -suppress vsim-12088 \
+        -suppress vsim-12090 \
+        -suppress vsim-3262 \
         -do \"run -a; quit\""
 }
 
