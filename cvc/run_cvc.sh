@@ -13,4 +13,5 @@ cvc64 +define+CVC \
 ../ihp13/bondpad/verilog/bondpad_70x70.v \
 ../openroad/out/croc.v \
 -sv ../rtl/test/tb_croc_chip.sv \
-+maxdelays +sdf_annotate ../openroad/out/croc.sdf
++maxdelays +sdf_annotate ../openroad/out/croc.sdf \
++sdf_log_file sdf.log
